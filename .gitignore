@@ -1,0 +1,6 @@
+# Rendering / build artifacts (not part of the mock deliverable)
+node_modules/
+chrome.zip
+chrome-linux64/
+package.json
+package-lock.json
