@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Brief ― コーディングエージェント活用方針</title>
+<style>
+  :root{
+    --ink:#0b0c0c;
+    --ink-soft:#3d3d3d;
+    --line:#0b0c0c;
+    --line-soft:#b1b4b6;
+    --bg:#ffffff;
+    --blue:#1d4ed8;
+    --link:#1d70b8;
+    --green-bd:#00703c;
+    --green-bg:#e8f5ec;
+    --amber-bd:#594d00;
+    --amber-bg:#fff7bf;
+    --red-bd:#942514;
+    --red-bg:#fbeae7;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+    line-height:1.7;font-size:17px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px 80px;}
+
+  .topbar{height:8px;background:var(--ink);}
+  .sample-tag{
+    display:inline-block;margin-top:28px;
+    background:var(--ink);color:#fff;font-weight:700;
+    font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 14px;
+  }
+
+  h1{font-size:40px;line-height:1.2;font-weight:800;margin:18px 0 8px;letter-spacing:-.02em;}
+  .doc-kind{font-size:16px;color:var(--ink-soft);font-weight:700;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;}
+  .purpose{font-size:18px;color:var(--ink-soft);margin:8px 0 0;}
+
+  .meta{display:flex;flex-wrap:wrap;gap:24px;border-top:2px solid var(--line);border-bottom:2px solid var(--line);
+    padding:14px 0;margin:24px 0 8px;font-size:15px;}
+  .meta b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:700;}
+
+  h2{font-size:27px;font-weight:800;margin:48px 0 8px;padding-top:8px;letter-spacing:-.01em;}
+  h2 .n{color:var(--blue);}
+  p.lead{font-size:17px;margin:8px 0 16px;}
+
+  /* Big conclusion block */
+  .conclusion{
+    border-left:10px solid var(--blue);background:#f0f5ff;
+    padding:24px 28px;margin:24px 0;
+  }
+  .conclusion .label{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin:0 0 6px;}
+  .conclusion p{font-size:22px;font-weight:700;line-height:1.45;margin:0;}
+  .conclusion p + p{font-size:17px;font-weight:400;margin-top:12px;color:var(--ink-soft);}
+
+  ul.tick{list-style:none;padding:0;margin:14px 0;}
+  ul.tick li{position:relative;padding:8px 0 8px 36px;border-bottom:1px solid var(--line-soft);font-size:17px;}
+  ul.tick li:last-child{border-bottom:none;}
+  ul.tick li::before{
+    content:"";position:absolute;left:0;top:11px;width:22px;height:22px;
+    background:var(--green-bd);border-radius:3px;
+  }
+  ul.tick li::after{
+    content:"✓";position:absolute;left:4px;top:7px;color:#fff;font-weight:800;font-size:15px;
+  }
+  ul.tick li b{font-weight:800;}
+
+  /* Two column reason layout */
+  .why-grid{display:grid;grid-template-columns:1fr;gap:0;}
+
+  /* Warning / notice boxes */
+  .notice{padding:18px 22px;margin:20px 0;border-left:10px solid;}
+  .notice .t{font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px;display:flex;align-items:center;gap:8px;}
+  .notice p{margin:0;font-size:16px;}
+  .notice ul{margin:8px 0 0;padding-left:22px;}
+  .notice li{margin:6px 0;font-size:16px;}
+  .notice.warn{border-color:var(--amber-bd);background:var(--amber-bg);}
+  .notice.warn .t{color:var(--amber-bd);}
+  .notice.action{border-color:var(--red-bd);background:var(--red-bg);}
+  .notice.action .t{color:var(--red-bd);}
+  .notice.ok{border-color:var(--green-bd);background:var(--green-bg);}
+  .notice.ok .t{color:var(--green-bd);}
+  .ic{display:inline-flex;width:22px;height:22px;border-radius:50%;color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800;}
+  .ic.w{background:var(--amber-bd);}
+  .ic.a{background:var(--red-bd);}
+
+  /* Decision table */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:16px;}
+  caption{text-align:left;font-weight:700;font-size:14px;color:var(--ink-soft);margin-bottom:8px;}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+  thead th{border-bottom:3px solid var(--ink);font-size:14px;text-transform:uppercase;letter-spacing:.04em;}
+  td.owner{font-weight:800;white-space:nowrap;}
+
+  .gov-list{border-top:3px solid var(--ink);margin-top:12px;}
+  .gov-item{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line-soft);}
+  .gov-item .gk{font-weight:800;font-size:17px;min-width:200px;}
+  .gov-item .gv{color:var(--ink-soft);font-size:16px;}
+
+  /* numbered decisions */
+  ol.decisions{counter-reset:d;list-style:none;padding:0;margin:16px 0;}
+  ol.decisions li{position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--line-soft);font-size:17px;}
+  ol.decisions li::before{
+    counter-increment:d;content:counter(d);
+    position:absolute;left:0;top:12px;width:34px;height:34px;
+    background:var(--ink);color:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;
+  }
+
+  footer{margin-top:56px;border-top:2px solid var(--line);padding-top:18px;font-size:14px;color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    body{font-size:16px;}
+    h1{font-size:30px;}
+    h2{font-size:23px;}
+    .conclusion p{font-size:19px;}
+    .gov-item{flex-direction:column;gap:2px;}
+    .gov-item .gk{min-width:0;}
+  }
+
+  @media print{
+    body{font-size:12pt;}
+    .topbar{background:#000;}
+    .conclusion,.notice{break-inside:avoid;}
+    h2{break-after:avoid;}
+    .sample-tag{border:1px solid #000;}
+    a{color:#000;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+
+  <span class="sample-tag">Design Sample</span>
+
+  <p class="doc-kind" style="margin-top:24px;">Decision Brief ／ 意思決定ブリーフ</p>
+  <h1>コーディングエージェント活用方針</h1>
+  <p class="purpose"><b>目的：</b>開発部門（PDE）における AI コーディングエージェントの今後の活用方針を、情報システム部門・経営層に提案し、ライセンス整備・規約確認・全社方針確定の判断材料とする。</p>
+
+  <div class="meta">
+    <div><b>宛先</b>情報システム部門／経営層</div>
+    <div><b>提案元</b>製品開発部門（PDE）／執行役員CBO 山田泰裕</div>
+    <div><b>日付</b>2026年6月19日</div>
+    <div><b>文書区分</b>提案（最終決定は経営層・情シス）</div>
+  </div>
+
+  <!-- Conclusion first -->
+  <div class="conclusion">
+    <p class="label">結論</p>
+    <p>Claude Code を PDE の標準とする。Codex は申請制で併用する。</p>
+    <p>標準は固定化せず、AI業界の変化を踏まえて定期的に見直す。資産は Markdown 等で相互移行でき、ロックインの懸念は限定的。</p>
+  </div>
+
+  <!-- 1. What we propose -->
+  <h2><span class="n">1.</span> 提案内容</h2>
+  <ul class="tick">
+    <li>Claude Code を <b>PDE の標準コーディングエージェント</b>とする。</li>
+    <li>完全な1本化は行わず、<b>Codex 等の併用を申請制で認める</b>（プロジェクト／役割単位で付与）。</li>
+    <li>標準は固定化せず、<b>期間を区切って検証し定期的に見直す</b>。</li>
+  </ul>
+
+  <!-- 2. Why Claude Code -->
+  <h2><span class="n">2.</span> Claude Code を標準とする理由</h2>
+  <ul class="tick">
+    <li><b>コードの正確さ。</b>正確性が重要なコード（PF運用の IaC 等）で安定。</li>
+    <li><b>複雑・探索的タスクへの強さ。</b>設計・探索、IaC、Android 設計・画面生成で差が出る。</li>
+    <li><b>ドキュメント・図表生成品質。</b>仕様書や SVG 等の図表で品質が高い。</li>
+    <li><b>Atlassian 連携の使い勝手。</b>Confluence／Jira 連携で現状優位。</li>
+    <li><b>企業姿勢・長期継続性への信頼。</b>長寿命プロダクトに適した安定性。</li>
+    <li><b>プラン経済性。</b>Team Premium に利用枠がバンドルされ予算化しやすい。</li>
+  </ul>
+
+  <!-- 3. Why not single-vendor -->
+  <h2><span class="n">3.</span> 完全一本化しない理由</h2>
+  <p class="lead">単一ベンダーへの完全一本化はリスクと機会損失を伴うため行いません。</p>
+  <ul class="tick">
+    <li><b>Codex が有効な局所的タスクがある。</b>全タスクの約3割は Claude Code 単独では取りこぼしがあり、その用途で有効。</li>
+    <li><b>初期コーディングのたたき台に使える。</b>「Codex で初期コーディング → Claude Code で検証」が機能。</li>
+    <li><b>相互レビューに使える。</b>片方のプランをもう片方が精査・レビューする併用が機能。</li>
+    <li><b>外部パートナーは現状 Codex 中心。</b>整合は段階的でよい。</li>
+  </ul>
+  <div class="notice warn">
+    <p class="t"><span class="ic w">!</span>AI業界の流動性</p>
+    <p>AI業界は流動的で、半年〜数年で優劣が変わり得る。標準は当面の最適解であり、未来永劫の固定ではない。コンテキストはソースコード側にあり、スキル／プロンプト／メモリは Markdown 等で相互移行可能なため、将来の移行コストは小さい。</p>
+  </div>
+
+  <!-- 4. Governance checks -->
+  <h2><span class="n">4.</span> ガバナンス確認事項</h2>
+  <p class="lead">基本要件は<b>入力データがモデル学習に使われないこと</b>。以下を全社情報セキュリティ方針と突合してください。</p>
+  <div class="gov-list">
+    <div class="gov-item"><span class="gk">学習不使用</span><span class="gv">入力データがモデル学習に使われないこと（基本要件）。</span></div>
+    <div class="gov-item"><span class="gk">ZDR</span><span class="gv">ゼロデータ保持の要否はポリシー次第。必須なら Enterprise 相当が要件。</span></div>
+    <div class="gov-item"><span class="gk">データレジデンシー</span><span class="gv">日本データレジデンシーの要否確認。</span></div>
+    <div class="gov-item"><span class="gk">SSO / SCIM</span><span class="gv">シングルサインオン・プロビジョニング要件の確認。</span></div>
+    <div class="gov-item"><span class="gk">監査ログ</span><span class="gv">監査ログの取得・保持要件の確認。</span></div>
+  </div>
+
+  <!-- 5. Required decisions -->
+  <h2><span class="n">5.</span> 判断が必要な事項</h2>
+  <div class="notice action">
+    <p class="t"><span class="ic a">!</span>情報システム部門・経営層が判断すべきこと</p>
+    <ol class="decisions" style="margin-top:8px;">
+      <li><b>Claude Code（Team Premium 相当）席</b>を開発部門の標準として整備するか。</li>
+      <li><b>Codex／技術サポート向け ChatGPT</b> を用途・役割単位で申請付与する仕組み・予算枠を設けるか。</li>
+      <li>各ツールの<b>規約・セキュリティ要件</b>（学習不使用／ZDR／データレジデンシー／SSO／監査）の適合可否。</li>
+      <li><b>外部パートナーのライセンス整合方針</b>（現状 Codex → 標準との整合）。</li>
+      <li><b>PM/BL・技術サポートのツール付与方針</b>の確定。</li>
+      <li><b>定期的な見直しサイクル</b>のプロセス合意。</li>
+    </ol>
+  </div>
+  <div class="notice warn">
+    <p class="t"><span class="ic w">?</span>未決事項・確認が必要な事項</p>
+    <ul>
+      <li>ZDR が必須か否か（全社情報セキュリティポリシー次第）。Team／Business プランの ZDR・データレジデンシー対応状況は要確認。</li>
+      <li>外部パートナーのライセンス整合のタイミング・要否。</li>
+      <li>価格・契約条件は資料に記載された範囲を超えて断定しない（最終判断は「価値あたりコスト」で行う）。</li>
+    </ul>
+  </div>
+
+  <!-- 6. Action owners -->
+  <h2><span class="n">6.</span> 次のステップと担当者</h2>
+  <table>
+    <thead><tr><th>担当者</th><th>アクション</th></tr></thead>
+    <tbody>
+      <tr><td class="owner">アーロン</td><td>Claude Code ⇔ Codex 資産の相互変換検証</td></tr>
+      <tr><td class="owner">田崎</td><td>プラットフォーム運用部の役割別ツール検証</td></tr>
+      <tr><td class="owner">端村／こだま</td><td>PdM・BL のツール選定検証</td></tr>
+      <tr><td class="owner">山田</td><td>本方針の取りまとめ・情報システム部門／経営層への報告</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <b>Design Sample</b> ／ 本文書はエンジニアリング部門の協議に基づく提案です。最終的なツール利用方針は経営層・情報システム部門の決定によります。 ／ 2026年6月19日
+  </footer>
+
+</div>
+</body>
+</html>

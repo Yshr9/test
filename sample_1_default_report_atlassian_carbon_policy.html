@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コーディングエージェント活用方針 ― エンジニアリング部門 提案</title>
+<style>
+  :root{
+    --bg:#f4f5f7;
+    --surface:#ffffff;
+    --ink:#172b4d;
+    --ink-soft:#42526e;
+    --ink-mute:#6b778c;
+    --line:#dfe1e6;
+    --line-soft:#ebecf0;
+    --blue:#0c66e4;
+    --blue-dark:#0747a6;
+    --blue-soft:#e9f2ff;
+    --green:#1f845a;
+    --green-soft:#dcfff1;
+    --amber:#974f0c;
+    --amber-soft:#fff7d6;
+    --purple:#5e4db2;
+    --purple-soft:#f3f0ff;
+    --teal:#206a83;
+    --teal-soft:#e3fafc;
+    --radius:8px;
+    --shadow:0 1px 1px rgba(9,30,66,.13),0 0 1px rgba(9,30,66,.10);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.7;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px;}
+
+  /* Sample tag */
+  .sample-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.08em;
+    padding:6px 12px;border-radius:4px;text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .sample-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:#4c9aff;}
+
+  /* Header */
+  header.doc{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-top:4px solid var(--blue);
+    border-radius:var(--radius);
+    padding:32px;
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+  }
+  header.doc h1{font-size:30px;line-height:1.3;margin:0 0 6px;letter-spacing:-.01em;}
+  header.doc .subtitle{font-size:17px;color:var(--ink-soft);font-weight:600;margin:0 0 20px;}
+  .meta-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  }
+  .meta-grid div{background:var(--surface);padding:12px 16px;}
+  .meta-grid dt{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-mute);font-weight:700;margin:0 0 2px;}
+  .meta-grid dd{margin:0;font-size:14px;font-weight:600;color:var(--ink);}
+
+  /* Section card */
+  section.card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 32px;
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+  }
+  .sec-head{display:flex;align-items:center;gap:12px;margin:0 0 4px;}
+  .sec-num{
+    flex:none;width:30px;height:30px;border-radius:6px;
+    background:var(--blue-soft);color:var(--blue-dark);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;
+  }
+  h2{font-size:20px;margin:0;letter-spacing:-.01em;}
+  .sec-lead{color:var(--ink-soft);margin:10px 0 22px;font-size:14.5px;}
+  h3{font-size:15px;margin:24px 0 10px;color:var(--ink);}
+
+  /* KPI cards */
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;}
+  .kpi{
+    border:1px solid var(--line);border-radius:8px;padding:18px;background:#fbfcfe;
+    border-left:4px solid var(--blue);
+  }
+  .kpi .k-label{font-size:12px;color:var(--ink-mute);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .kpi .k-value{font-size:24px;font-weight:800;color:var(--ink);margin:6px 0 2px;line-height:1.2;}
+  .kpi .k-sub{font-size:12.5px;color:var(--ink-soft);}
+  .kpi.green{border-left-color:var(--green);}
+  .kpi.purple{border-left-color:var(--purple);}
+  .kpi.amber{border-left-color:var(--amber);}
+
+  /* Badges */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .badge::before{content:"";width:7px;height:7px;border-radius:50%;}
+  .badge.standard{background:var(--blue-soft);color:var(--blue-dark);border-color:#9dc3f7;}
+  .badge.standard::before{background:var(--blue);}
+  .badge.exception{background:var(--amber-soft);color:var(--amber);border-color:#f5d99a;}
+  .badge.exception::before{background:#d98517;}
+  .badge.both{background:var(--purple-soft);color:var(--purple);border-color:#c8bdf0;}
+  .badge.both::before{background:var(--purple);}
+  .badge.limited{background:var(--teal-soft);color:var(--teal);border-color:#a3dbe6;}
+  .badge.limited::before{background:var(--teal);}
+
+  /* Reason cards */
+  .reason-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;}
+  .reason{border:1px solid var(--line);border-radius:8px;padding:18px;background:var(--surface);}
+  .reason .r-title{font-weight:700;font-size:14.5px;margin:0 0 6px;display:flex;gap:8px;align-items:center;}
+  .reason .r-title .ic{
+    flex:none;width:26px;height:26px;border-radius:6px;background:var(--blue-soft);color:var(--blue-dark);
+    display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;
+  }
+  .reason p{margin:0;font-size:13.5px;color:var(--ink-soft);}
+
+  /* Callout */
+  .callout{
+    border-radius:8px;padding:16px 18px;margin:18px 0;font-size:14px;
+    border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--blue-soft);
+  }
+  .callout.info{border-left-color:var(--blue);background:var(--blue-soft);}
+  .callout.warn{border-left-color:var(--amber);background:var(--amber-soft);}
+  .callout.ok{border-left-color:var(--green);background:var(--green-soft);}
+  .callout .c-title{font-weight:800;margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;}
+  .callout p{margin:0;color:var(--ink-soft);}
+
+  /* Tables */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;}
+  thead th{
+    background:#f7f8fa;text-align:left;padding:11px 14px;font-size:12px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink-mute);font-weight:700;
+    border-bottom:2px solid var(--line);white-space:nowrap;
+  }
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top;color:var(--ink-soft);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafbfc;}
+  td.tool{font-weight:600;color:var(--ink);}
+
+  /* Numbered request cards */
+  .req-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+  .req{display:flex;gap:14px;border:1px solid var(--line);border-radius:8px;padding:16px 18px;background:#fbfcfe;}
+  .req .num{
+    flex:none;width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+  }
+  .req .req-body{font-size:13.5px;color:var(--ink-soft);}
+  .req .req-body strong{color:var(--ink);}
+
+  /* Governance chips */
+  .gov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .gov{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--surface);}
+  .gov .g-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .gov .g-name{font-weight:700;font-size:14px;}
+  .gov p{margin:0;font-size:13px;color:var(--ink-soft);}
+  .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--amber-soft);color:var(--amber);border:1px solid #f5d99a;}
+
+  ul.clean{margin:8px 0;padding-left:20px;}
+  ul.clean li{margin:6px 0;color:var(--ink-soft);font-size:14px;}
+  ul.clean li strong{color:var(--ink);}
+
+  footer.doc{
+    text-align:center;font-size:12.5px;color:var(--ink-mute);
+    padding:24px;border-top:1px solid var(--line);margin-top:8px;
+  }
+
+  @media (max-width:640px){
+    .wrap{padding:20px 14px 60px;}
+    header.doc{padding:22px;}
+    header.doc h1{font-size:24px;}
+    section.card{padding:22px 18px;}
+  }
+
+  @media print{
+    body{background:#fff;font-size:11.5px;}
+    .wrap{max-width:none;padding:0;}
+    header.doc,section.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
+    section.card{margin-bottom:14px;}
+    .kpi,.reason,.req,.gov,.callout{break-inside:avoid;}
+    .sample-tag{border:1px solid #000;background:#fff;color:#000;}
+    a{color:#000;text-decoration:none;}
+    tbody tr:hover{background:transparent;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sample-tag">Design Sample</div>
+
+  <header class="doc">
+    <h1>コーディングエージェント活用方針</h1>
+    <p class="subtitle">エンジニアリング部門 提案</p>
+    <dl class="meta-grid">
+      <div><dt>宛先</dt><dd>情報システム部門</dd></div>
+      <div><dt>提案元</dt><dd>CLOMO事業本部 製品開発部門（PDE）／執行役員CBO 山田泰裕</dd></div>
+      <div><dt>日付</dt><dd>2026年6月19日</dd></div>
+      <div><dt>文書区分</dt><dd>活用方針 提案（判断材料）</dd></div>
+    </dl>
+  </header>
+
+  <!-- 1. Executive Summary -->
+  <section class="card" id="summary">
+    <div class="sec-head"><span class="sec-num">1</span><h2>エグゼクティブ・サマリー</h2></div>
+    <p class="sec-lead">本資料は、開発部門（PDE）における AI コーディングエージェントの今後の活用方針を、情報システム部門に提案するものです。トライアル制度（2026年6月受付終了）を経て、現場の利用実態と部門横断の協議に基づいて取りまとめました。</p>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="k-label">標準ツール</div>
+        <div class="k-value">Claude Code</div>
+        <div class="k-sub"><span class="badge standard">Standard</span> PDEの標準エージェント</div>
+      </div>
+      <div class="kpi amber">
+        <div class="k-label">例外の取り扱い</div>
+        <div class="k-value">Codex 併用</div>
+        <div class="k-sub"><span class="badge exception">申請制</span> 完全1本化はしない</div>
+      </div>
+      <div class="kpi purple">
+        <div class="k-label">運用ポリシー</div>
+        <div class="k-value">定期見直し</div>
+        <div class="k-sub">標準は固定化しない</div>
+      </div>
+      <div class="kpi green">
+        <div class="k-label">ロックイン懸念</div>
+        <div class="k-value">限定的</div>
+        <div class="k-sub">資産は相互移行可能</div>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <p class="c-title">結論</p>
+      <p>標準は <strong>Claude Code</strong>。ただし完全な1本化は行わず、プロジェクト特性・役割に応じて <strong>Codex 等の併用を申請制で認める</strong>。AI業界は流動的なため標準は固定化せず、期間を区切って検証し<strong>定期的に見直す</strong>。コンテキストはソースコード側にあり、スキル／プロンプト／メモリも Markdown 形式で相互移行可能なため、<strong>ロックインの懸念は限定的</strong>。</p>
+    </div>
+  </section>
+
+  <!-- 2. Background -->
+  <section class="card" id="background">
+    <div class="sec-head"><span class="sec-num">2</span><h2>背景・現状</h2></div>
+    <p class="sec-lead">トライアル終了後の方針整理として、社内エンジニアの利用状況および外部パートナーの利用傾向を整理しました。</p>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="k-label">法人ライセンス対象</div>
+        <div class="k-value">約56名</div>
+        <div class="k-sub">うちエンジニア 約45名</div>
+      </div>
+      <div class="kpi green">
+        <div class="k-label">社内エンジニア</div>
+        <div class="k-value">約7割</div>
+        <div class="k-sub">が Claude Code を利用</div>
+      </div>
+      <div class="kpi amber">
+        <div class="k-label">社内エンジニア</div>
+        <div class="k-value">2〜3割</div>
+        <div class="k-sub">が Codex を利用</div>
+      </div>
+      <div class="kpi purple">
+        <div class="k-label">外部パートナー</div>
+        <div class="k-value">主に Codex</div>
+        <div class="k-sub">現状は Codex 中心</div>
+      </div>
+    </div>
+    <ul class="clean">
+      <li>この1年は「どの用途で使うか」を各自が探索する趣旨でトライアルを実施。結果を踏まえ運用ルールを定める段階に入った。</li>
+      <li>開発・プラットフォーム運用・PM/BL の各部門から、AIに精通したメンバーを集めて協議し本方針を取りまとめた。</li>
+    </ul>
+  </section>
+
+  <!-- 3. Claude Code as Standard -->
+  <section class="card" id="standard">
+    <div class="sec-head"><span class="sec-num">3</span><h2>方針：Claude Code を標準とする</h2></div>
+    <p class="sec-lead">現場の利用実感に基づく主な推奨理由は以下のとおりです。</p>
+    <div class="reason-grid">
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>コードの正確さ</p>
+        <p>正確性が重要なコード（PF運用のIaC等）で安定した品質。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>複雑・探索的タスクへの強さ</p>
+        <p>設計・探索を伴う作業、IaC（Ansible等）、Android の設計・画面生成で明確に差が出る。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>ドキュメント・図表生成品質</p>
+        <p>仕様書や SVG 等の図表生成で品質が高い。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>Atlassian 連携の使い勝手</p>
+        <p>Confluence／Jira 連携でチャット面を含め現状で優位（Codex も MCP 経由で連携自体は可能）。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>企業姿勢・長期継続性</p>
+        <p>15年続く長寿命プロダクトでは、提供元の継続性・理念の安定性も選定要素となる。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">✓</span>プラン経済性</p>
+        <p>Team Premium に Claude Code 利用枠がバンドルされ、1日の利用量に概ね収まる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Codex Exception -->
+  <section class="card" id="codex">
+    <div class="sec-head"><span class="sec-num">4</span><h2>例外モデル：Codex を申請制で併用</h2></div>
+    <p class="sec-lead">なぜ完全な1本化を行わないのか、その理由と運用方針を整理します。</p>
+    <div class="reason-grid">
+      <div class="reason">
+        <p class="r-title"><span class="ic">+</span>局所的タスクで有効</p>
+        <p>全タスクのうち約3割は Claude Code 単独では取りこぼしがあり、その用途で Codex が有効。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">+</span>初期コーディングのたたき台</p>
+        <p>「Codex で初期コーディング → Claude Code で検証」というスタイルが機能。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">+</span>相互レビュー</p>
+        <p>片方が書いたプランをもう片方が精査・レビューする併用が現場で機能している。</p>
+      </div>
+      <div class="reason">
+        <p class="r-title"><span class="ic">+</span>外部パートナー</p>
+        <p>外部パートナーは現状 Codex 中心。標準化に伴い段階的に整合させる。</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <p class="c-title">運用方針</p>
+      <p>これらは<strong>プロジェクト／役割単位の申請制</strong>で個別付与する。標準（Claude Code）を全員に整備したうえで、必要な人・プロジェクトに Codex を追加する形を基本とする。</p>
+    </div>
+    <div class="callout ok">
+      <p class="c-title">ロックインに関する整理</p>
+      <p>コンテキストは<strong>ソースコード側</strong>にあり、スキル／プロンプト／メモリは <strong>Markdown 等で相互移行可能</strong>（<code>CLAUDE.md</code> / <code>AGENTS.md</code> は片方をメイン・もう片方を参照として共通化できる）。一部マーケットプレイス由来のスキルは片寄せ懸念があるが AI による相互変換が可能で、移行コストは小さい。</p>
+    </div>
+  </section>
+
+  <!-- 5. Use Case Matrix -->
+  <section class="card" id="matrix">
+    <div class="sec-head"><span class="sec-num">5</span><h2>用途別 推奨ツール マトリクス</h2></div>
+    <p class="sec-lead">用途ごとの推奨ツール（目安）。最終判断は役割・プロジェクト特性に応じて行います。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>用途</th><th>推奨ツール</th><th>区分</th></tr></thead>
+        <tbody>
+          <tr><td>複雑・探索的な開発、高ステークスな改修</td><td class="tool">Claude Code</td><td><span class="badge standard">Standard</span></td></tr>
+          <tr><td>Android 等の UI 設計・画面生成</td><td class="tool">Claude Code</td><td><span class="badge standard">Standard</span></td></tr>
+          <tr><td>図・仕様書・ドキュメント生成</td><td class="tool">Claude Code</td><td><span class="badge standard">Standard</span></td></tr>
+          <tr><td>Atlassian（Confluence／Jira）連携を伴う作業</td><td class="tool">Claude Code（Codex も MCP 経由で可）</td><td><span class="badge standard">Standard</span></td></tr>
+          <tr><td>正確性が重要なコード（PF運用の IaC 等）</td><td class="tool">Claude Code</td><td><span class="badge standard">Standard</span></td></tr>
+          <tr><td>コスパ重視の局所的タスク、初期コーディングのたたき台</td><td class="tool">Codex</td><td><span class="badge exception">申請制</span></td></tr>
+          <tr><td>生成↔レビューの相互チェック（役割分担）</td><td class="tool">Claude Code ＋ Codex 併用</td><td><span class="badge both">併用</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. Governance -->
+  <section class="card" id="governance">
+    <div class="sec-head"><span class="sec-num">6</span><h2>データガバナンス・契約要件</h2></div>
+    <p class="sec-lead">基本要件は<strong>入力データがモデル学習に使われないこと</strong>。以下の項目について全社情報セキュリティ方針との突合・確認をお願いします。</p>
+    <div class="gov-grid">
+      <div class="gov">
+        <div class="g-top"><span class="g-name">学習不使用</span><span class="badge limited">基本要件</span></div>
+        <p>入力データがモデル学習に使われないこと。商用規約で満たせば当面は十分と整理。</p>
+      </div>
+      <div class="gov">
+        <div class="g-top"><span class="g-name">ZDR</span><span class="pill">要否確認</span></div>
+        <p>ゼロデータ保持の要否は全社情報セキュリティポリシー次第。必須なら Enterprise 相当が要件。</p>
+      </div>
+      <div class="gov">
+        <div class="g-top"><span class="g-name">データレジデンシー</span><span class="pill">要確認</span></div>
+        <p>日本データレジデンシーの要否をポリシーに照らして確認。</p>
+      </div>
+      <div class="gov">
+        <div class="g-top"><span class="g-name">SSO / SCIM</span><span class="pill">要確認</span></div>
+        <p>シングルサインオン・ユーザープロビジョニング要件の確認。</p>
+      </div>
+      <div class="gov">
+        <div class="g-top"><span class="g-name">監査ログ</span><span class="pill">要確認</span></div>
+        <p>監査ログの取得・保持要件の確認。</p>
+      </div>
+    </div>
+    <div class="callout info">
+      <p class="c-title">補足</p>
+      <p>ZDR が不要（学習不使用の規約で足りる）の場合は Team／Business クラスで運用可能。Team／Business プランの ZDR・データレジデンシー対応状況は要確認。価格・契約条件は資料に記載された範囲を超えて断定しません。</p>
+    </div>
+  </section>
+
+  <!-- 7. Requests -->
+  <section class="card" id="requests">
+    <div class="sec-head"><span class="sec-num">7</span><h2>情報システム部門への依頼事項</h2></div>
+    <p class="sec-lead">本提案にあたり、情報システム部門に以下の整備・確認・決定をお願いします。</p>
+    <div class="req-grid">
+      <div class="req"><span class="num">1</span><div class="req-body">開発部門へ <strong>Claude Code（Team Premium 相当）席</strong>を標準整備。</div></div>
+      <div class="req"><span class="num">2</span><div class="req-body"><strong>Codex（および技術サポート向け ChatGPT チャット）</strong>を用途／役割単位で申請付与できる仕組み・予算枠の整備。</div></div>
+      <div class="req"><span class="num">3</span><div class="req-body">各ツールの<strong>規約・セキュリティ要件</strong>（学習不使用／ZDR／データレジデンシー／SSO／監査）のポリシー適合可否を確認。</div></div>
+      <div class="req"><span class="num">4</span><div class="req-body"><strong>外部パートナーのライセンス整合方針</strong>の決定（現状 Codex → 標準との整合）。</div></div>
+      <div class="req"><span class="num">5</span><div class="req-body"><strong>PM/BL・技術サポートのツール付与方針</strong>の確定（開発部門と連携）。</div></div>
+      <div class="req"><span class="num">6</span><div class="req-body"><strong>定期的な見直しサイクル</strong>（検証→方針更新）のプロセス合意。</div></div>
+    </div>
+  </section>
+
+  <!-- 8. Next Steps -->
+  <section class="card" id="next">
+    <div class="sec-head"><span class="sec-num">8</span><h2>次のステップ（部門側アクション）</h2></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>担当者</th><th>アクション</th></tr></thead>
+        <tbody>
+          <tr><td class="tool">アーロン</td><td>Claude Code ⇔ Codex 資産の相互変換検証</td></tr>
+          <tr><td class="tool">田崎</td><td>プラットフォーム運用部の役割別ツール検証</td></tr>
+          <tr><td class="tool">端村／こだま</td><td>PdM・BL のツール選定検証</td></tr>
+          <tr><td class="tool">山田</td><td>本方針の取りまとめ・情報システム部門／経営層への報告</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout info">
+      <p class="c-title">最終方針</p>
+      <p>本文書はエンジニアリング部門の協議に基づく提案です。最終的なツール利用方針は経営層・情報システム部門の決定によります。</p>
+    </div>
+  </section>
+
+  <footer class="doc">
+    Design Sample ／ コーディングエージェント活用方針 ― エンジニアリング部門 提案 ／ 2026年6月19日
+  </footer>
+
+</div>
+</body>
+</html>
